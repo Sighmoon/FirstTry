@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+    <_embedded>
+        <Purchase>
+            <id>Z-316</id>
+            <name>Поставка канцелярских товаров</name>
+            <status>Объявлена / Опубликована</status>
+            <statusId>3</statusId>
+            <typeTorgs>Запрос цен</typeTorgs>
+            <publicDate>2016-10-07 09:47:23</publicDate>
+            <endPublicationDate>2016-11-28 10:00:00</endPublicationDate>
+            <dateUpdate>2016-10-07 09:47:23</dateUpdate>
+            <requestVersions>1</requestVersions>
+            <organization>
+                <shortName>ООО &quot;Тест_Федерал&quot;</shortName>
+                <inn>0001222222</inn>
+                <kpp>000121212</kpp>
+                <postAddress>603000, Нижний Новгород, ул Светлая, д 1</postAddress>
+                <legalAddress>603000, Нижний Новгород, ул Светлая, д 1</legalAddress>
+            </organization>
+            <lots>
+                <lot>
+                    <agreementSubject>Канцелярские товары</agreementSubject>
+                    <lotPrice>400000.00</lotPrice>
+                    <unitAmount></unitAmount>
+                    <nds>
+                        <digitalCode>3</digitalCode>
+                        <name>С учетом НДС</name>
+                    </nds>
+                    <currency>
+                        <digitalCode>643</digitalCode>
+                        <code>RUB</code>
+                    </currency>
+                    <maxUnitPrice></maxUnitPrice>
+                    <offerPriceType>
+                        <code>1</code>
+                        <name>Начальная(максимальная) цена договора</name>
+                    </offerPriceType>
+                    <delivBasis>В соответствии с документацией</delivBasis>
+                    <condSupply></condSupply>
+                    <requirements></requirements>
+                </lot>
+            </lots>
+        </Purchase>
+    </_embedded>
+    <_links>
+        <self>
+            <href>http://api.federal1.ru/api/registry/Z-316</href>
+        </self>
+    </_links>
+</data>
