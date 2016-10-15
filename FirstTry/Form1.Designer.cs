@@ -30,19 +30,20 @@
         {
             this.outTextBox = new System.Windows.Forms.TextBox();
             this.resultButton = new System.Windows.Forms.Button();
+            this.requestTextBox = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // outTextBox
             // 
-            this.outTextBox.Location = new System.Drawing.Point(95, 12);
+            this.outTextBox.Location = new System.Drawing.Point(65, 103);
             this.outTextBox.Multiline = true;
             this.outTextBox.Name = "outTextBox";
-            this.outTextBox.Size = new System.Drawing.Size(458, 148);
+            this.outTextBox.Size = new System.Drawing.Size(514, 148);
             this.outTextBox.TabIndex = 0;
             // 
             // resultButton
             // 
-            this.resultButton.Location = new System.Drawing.Point(289, 184);
+            this.resultButton.Location = new System.Drawing.Point(634, 22);
             this.resultButton.Name = "resultButton";
             this.resultButton.Size = new System.Drawing.Size(75, 23);
             this.resultButton.TabIndex = 2;
@@ -50,15 +51,23 @@
             this.resultButton.UseVisualStyleBackColor = true;
             this.resultButton.Click += new System.EventHandler(this.resultButton_Click);
             // 
+            // requestTextBox
+            // 
+            this.requestTextBox.Location = new System.Drawing.Point(65, 22);
+            this.requestTextBox.Name = "requestTextBox";
+            this.requestTextBox.Size = new System.Drawing.Size(514, 20);
+            this.requestTextBox.TabIndex = 3;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(627, 241);
+            this.ClientSize = new System.Drawing.Size(738, 283);
+            this.Controls.Add(this.requestTextBox);
             this.Controls.Add(this.resultButton);
             this.Controls.Add(this.outTextBox);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Парсер";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -68,6 +77,7 @@
 
         private System.Windows.Forms.TextBox outTextBox;
         private System.Windows.Forms.Button resultButton;
+        private System.Windows.Forms.TextBox requestTextBox;
     }
 }
 
