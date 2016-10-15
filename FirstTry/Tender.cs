@@ -11,17 +11,13 @@ namespace WindowsFormsApplication1
         public Tender()
         {
             lots = new List<Lot>();
+            purchaseData = new Dictionary<string, string>();
+            organization = new Dictionary<string, string>();
         }
-        public string id { get; set; }
-        public string name { get; set; }
-        public int? statusId { get; set; }
-        public string status { get; set; }
-        public string typeTorgs { get; set; }
-        public string publicDate { get; set; }
-        public string endPublicationDate { get; set; }
-        public string dateUpdate { get; set; }
-        public string requestVersion { get; set; }
-        public organizationStruc organization = new organizationStruc();
+
+        public Dictionary<string, string> organization;
+        public Dictionary<string, string> purchaseData;
+        //public organizationStruc organization = new organizationStruc();
         public List <Lot> lots;
         public struct organizationStruc
         {

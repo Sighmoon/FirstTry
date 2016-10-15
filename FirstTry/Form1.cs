@@ -38,75 +38,65 @@ namespace WindowsFormsApplication1
             Tender tender;
             XmlElement xRoot = xDoc.DocumentElement;
             tender=xmlProcces(xRoot);
-            outTextBox.Text += tender.name;
+            //outTextBox.Text += tender.name;
         }
 
         private Tender xmlProcces(XmlElement xRoot)
         {
             Tender tender = new Tender();
             XmlNode purchase = xRoot.SelectSingleNode("//data/_embedded/Purchase");
-            if(purchase!=null)
+            if (purchase != null)
             {
-                XmlNode node = purchase.SelectSingleNode("id");
-                tender.id = node.InnerText;
-                node = purchase.SelectSingleNode("name");
-                tender.name = node.InnerText;
-                node = purchase.SelectSingleNode("status");
-                tender.status = node.InnerText;
-                node = purchase.SelectSingleNode("statusId");
-                tender.statusId = Convert.ToInt32(node.InnerText);
-                node = purchase.SelectSingleNode("typeTorgs");
-                tender.typeTorgs = node.InnerText;
-                node = purchase.SelectSingleNode("publicDate");
-                tender.status = node.InnerText;
-                node = purchase.SelectSingleNode("endPublicationDate");
-                tender.endPublicationDate = node.InnerText;
-                node = purchase.SelectSingleNode("dateUpdate");
-                tender.dateUpdate = node.InnerText;
-                node = purchase.SelectSingleNode("requestVersions");
-                tender.requestVersion = node.InnerText;
-                node = purchase.SelectSingleNode("//organization/shortName");
-                tender.organization.shortName = node.InnerText;
-                node = purchase.SelectSingleNode("//organization/inn");
-                tender.organization.inn = node.InnerText;
-                node = purchase.SelectSingleNode("//organization/kpp");
-                tender.organization.kpp = node.InnerText;
-                node = purchase.SelectSingleNode("//organization/postAddress");
-                if (node != null) tender.organization.postAddress = node.InnerText;
-                node = purchase.SelectSingleNode("//organization/legalAddress");
-                if (node != null) tender.organization.legalAddress = node.InnerText;
-                XmlNodeList lots = purchase.SelectNodes("//lots/lot");
-                foreach (XmlNode lot in lots)
+                foreach (XmlNode curNode in purchase.ChildNodes)
                 {
-                    string tmp;
-                    Lot currentLot = new Lot();
-                    node = lot.SelectSingleNode("agreementSubject");
-                    currentLot.agreementSubject = node.InnerText;
-                    node = lot.SelectSingleNode("lotPrice");
-                    if (node != null) currentLot.lotPrice = Decimal.Parse(node.InnerText.Replace('.', ',')); else currentLot.lotPrice = null;
-                    node = lot.SelectSingleNode("unitAmount");
-                    if (node.InnerText != "") currentLot.unitAmount = Convert.ToInt64(node.InnerText); else currentLot.unitAmount = null;
-                    node = lot.SelectSingleNode("//nds/digitalCode");
-                    if (node != null) currentLot.nds.digitalCode = Convert.ToInt32(node.InnerText); else currentLot.nds.digitalCode = null;
-                    node = lot.SelectSingleNode("//nds/name");
-                    if (node != null) currentLot.nds.name = node.InnerText; else currentLot.nds.digitalCode = null;
-                    node = lot.SelectSingleNode("//currency/digitalCode");
-                    if (node != null) currentLot.currency.digitalCode = Convert.ToInt32(node.InnerText); else currentLot.currency.digitalCode = null;
-                    node = lot.SelectSingleNode("//currency/code");
-                    if (node != null) currentLot.currency.code = node.InnerText; else currentLot.currency.code = null;
-                    node = lot.SelectSingleNode("maxUnitPrice");
-                    if (node.InnerText != "") currentLot.maxUnitPrice = Decimal.Parse(node.InnerText.Replace('.', ',')); else currentLot.maxUnitPrice = null;
-                    node = lot.SelectSingleNode("//offerPriceType/code");
-                    if (node != null) currentLot.offerPriceType.code = Convert.ToInt32(node.InnerText); else currentLot.offerPriceType.code = null;
-                    node = lot.SelectSingleNode("//offerPruceType/name");
-                    if (node != null) currentLot.offerPriceType.name = node.InnerText; else currentLot.offerPriceType.name = null;
-                    node = lot.SelectSingleNode("delivBasis");
-                    currentLot.delivBasis = node.InnerText;
-                    node = lot.SelectSingleNode("condSupply");
-                    if (node != null) currentLot.condSupply = node.InnerText; else currentLot.condSupply = null;
-                    node = lot.SelectSingleNode("requirments");
-                    if (node != null) currentLot.requirements = node.InnerText; else currentLot.requirements = null;
-                    if (currentLot != null) tender.lots.Add(currentLot);
+                    if (curNode.FirstChild.FirstChild == null && curNode.Name != null && curNode.InnerText != null)
+                        {
+                            tender.purchaseData.Add(curNode.Name, curNode.InnerText);
+                        }
+                    else if(curNode.Name == "organization" )
+                    {
+                        foreach(XmlNode orgNode in curNode.ChildNodes)
+                        {
+                            if (curNode != null)
+                                tender.organization.Add(orgNode.Name, orgNode.InnerText);
+                            else tender.organization.Add(orgNode.Name, null);
+                        }
+                    }
+                    else if(curNode.Name == "lots")
+                    {
+                        
+                        foreach (XmlNode lot in curNode.ChildNodes)
+                        {
+                            Lot currentLot = new Lot();
+                            XmlNode node;
+                            //node = lot.SelectSingleNode("agreementSubject");
+                            currentLot.agreementSubject = lot.SelectSingleNode("agreementSubject").InnerText;
+                            if (lot.SelectSingleNode("lotPrice") != null)
+                                currentLot.lotPrice = Decimal.Parse(lot.SelectSingleNode("lotPrice").InnerText.Replace('.', ',')); else currentLot.lotPrice = null;
+                            if (lot.SelectSingleNode("unitAmount").InnerText != "")
+                                currentLot.unitAmount = Convert.ToInt64(lot.SelectSingleNode("unitAmount").InnerText); else currentLot.unitAmount = null;
+                            if (lot.SelectSingleNode("//nds/digitalCode") != null)
+                                currentLot.nds.digitalCode = Convert.ToInt32(lot.SelectSingleNode("//nds/digitalCode").InnerText); else currentLot.nds.digitalCode = null;
+                            if (lot.SelectSingleNode("//nds/name") != null)
+                                currentLot.nds.name = lot.SelectSingleNode("//nds/name").InnerText; else currentLot.nds.digitalCode = null;
+                            if (lot.SelectSingleNode("//currency/digitalCode") != null)
+                                currentLot.currency.digitalCode = Convert.ToInt32(lot.SelectSingleNode("//currency/digitalCode").InnerText); else currentLot.currency.digitalCode = null;
+                            if (lot.SelectSingleNode("//currency/code") != null)
+                                currentLot.currency.code = lot.SelectSingleNode("//currency/code").InnerText; else currentLot.currency.code = null;
+                            if (lot.SelectSingleNode("maxUnitPrice").InnerText != "")
+                                currentLot.maxUnitPrice = Decimal.Parse(lot.SelectSingleNode("maxUnitPrice").InnerText.Replace('.', ',')); else currentLot.maxUnitPrice = null;
+                            if (lot.SelectSingleNode("//offerPriceType/code") != null)
+                                currentLot.offerPriceType.code = Convert.ToInt32(lot.SelectSingleNode("//offerPriceType/code").InnerText); else currentLot.offerPriceType.code = null;
+                            if (lot.SelectSingleNode("//offerPruceType/name") != null)
+                                currentLot.offerPriceType.name = lot.SelectSingleNode("//offerPruceType/name").InnerText; else currentLot.offerPriceType.name = null;
+                            currentLot.delivBasis = lot.SelectSingleNode("delivBasis").InnerText;
+                            if (lot.SelectSingleNode("condSupply") != null)
+                                currentLot.condSupply = lot.SelectSingleNode("condSupply").InnerText; else currentLot.condSupply = null;
+                            if (lot.SelectSingleNode("requirments") != null) currentLot.requirements = lot.SelectSingleNode("requirments").InnerText; else currentLot.requirements = null;
+                            tender.lots.Add(currentLot);
+                        }
+
+                    }
                 }
             }
 
