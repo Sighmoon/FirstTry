@@ -1,0 +1,6 @@
+C:\Users\Сергей\Documents\GitHub\FirstTry\ConsoleParse\bin\Debug\ConsoleParse.exe.config
+C:\Users\Сергей\Documents\GitHub\FirstTry\ConsoleParse\bin\Debug\ConsoleParse.exe
+C:\Users\Сергей\Documents\GitHub\FirstTry\ConsoleParse\bin\Debug\ConsoleParse.pdb
+C:\Users\Сергей\Documents\GitHub\FirstTry\ConsoleParse\obj\Debug\ConsoleParse.exe
+C:\Users\Сергей\Documents\GitHub\FirstTry\ConsoleParse\obj\Debug\ConsoleParse.pdb
+C:\Users\Сергей\Documents\GitHub\FirstTry\ConsoleParse\obj\Debug\ConsoleParse.csprojResolveAssemblyReference.cache

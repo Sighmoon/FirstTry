@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WindowsFormsApplication1
+namespace ConsoleParse
 {
     public class Tender
     {
@@ -19,15 +19,28 @@ namespace WindowsFormsApplication1
         public Dictionary<string, string> purchaseData;
         //public organizationStruc organization = new organizationStruc();
         public List <Lot> lots;
-        public struct organizationStruc
+
+        public void TestPrint()
         {
-            public string shortName { set; get; }
-            public string inn { set; get; }
-            public string kpp { set; get; }
-            public string postAddress { set; get; }
-            public string legalAddress { set; get; }
+            foreach(KeyValuePair<string, string> data in purchaseData)
+            {
+                Console.WriteLine(data.Key + " " + data.Value);
+            }
+            foreach(KeyValuePair<string, string> data in organization)
+            {
+                Console.WriteLine(data.Key + " " + data.Value);
+            }
+            foreach (Lot lot in lots)
+            {
+                Console.WriteLine("agreementSubject " + lot.agreementSubject);
+                Console.WriteLine("lotPrice " + lot.lotPrice);
+                Console.WriteLine("unitAmount " + lot.unitAmount);
+                Console.WriteLine("and etc...");
+
+            }
         }
     }
+
 
     public class Lot
     {
@@ -35,12 +48,14 @@ namespace WindowsFormsApplication1
         public decimal? lotPrice { get; set; }
         public ndsStruct nds;
         public currencyStruct currency;
-        public long? unitAmount { get; set; }
+        public decimal? unitAmount { get; set; }
         public decimal? maxUnitPrice { get; set; }
         public string delivBasis { get; set; }
         public string condSupply { get; set; }
         public string requirements { get; set; }
         public offerPriceTypeStruct offerPriceType;
+
+
     }
     public struct currencyStruct
     {
