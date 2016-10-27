@@ -7,6 +7,7 @@ using System.Xml;
 using System.Net;
 using System.IO;
 using ConsoleParse;
+using System.Timers;
 
 
 
@@ -16,37 +17,62 @@ namespace ConsoleParse
 
     class Program
     {
-        
+        static Timer timer = new Timer(86400000);
+        static List<Tender> tenderList = new List<Tender>();
+        static string pageSize = "2000";
+        static string startDateTime = "0";
+
         static void Main(string[] args)
         {
-            string page, pageSize, startDateTime, endDateTime;
-            List<string> idList;
-            List<Tender> tenderList;
-
-            //временный ввод ручками
-            page = Console.ReadLine();
-            pageSize = Console.ReadLine();
-            startDateTime = Console.ReadLine();
-            endDateTime = Console.ReadLine();         
-
-            string address = addressForm(page, pageSize, startDateTime, endDateTime); // формирование адреса из компонентов
-            XmlDocument xDoc = httpRequestXml(address); // загрузка документа 
-            idList = xmlParseShort(xDoc.DocumentElement); // формирование списка id, по которым формируется адрес каждого торга
-            tenderList = xmlParseById(idList); // формирование списка тендеров
-            
-            Console.WriteLine("Обработка закончена. Обработано объектов: " + tenderList.Count);
+            TimerSet();
             Console.ReadLine();
         }
 
-        static List<string> xmlParseShort(XmlElement xRoot) // парсинг документа, содержащего список торгов и выдирание айдишников, с целью использования их в формирование адреса
+        private static void OnTimedEvent(Object source, ElapsedEventArgs e) //событие, срабатывающее по таймеру. 
         {
-            List<string> idList = new List<string>();
+            string endDateTime = currentTime();
+            string address = addressForm(pageSize, startDateTime, endDateTime);
+            mainParse(address, ref tenderList);
+            Console.WriteLine("Обработка закончена. Обработано объектов: " + tenderList.Count);
+        }
 
-            foreach(XmlNode node in xRoot.SelectNodes("//data/_embedded/Purchase"))
+        static void TimerSet() // запуск таймера + первое принудительное срабатывание события OnTimedEvent
+        {
+            timer.Elapsed += OnTimedEvent;
+            timer.AutoReset = true;
+            timer.Start();
+            OnTimedEvent(timer, null);
+        }
+
+
+        static void mainParse(string address, ref List<Tender> tenderList) //главная функция парсерра, автоматически переходит к следующей странице
+        {
+            XmlDocument xDoc = httpRequestXml(address);
+            XmlDocument xIdDoc;
+            Tender tender;
+            string idAddress, nextAddress;
+            foreach(XmlNode node in xDoc.DocumentElement.SelectNodes("//data/_embedded/Purchase"))
             {
-                idList.Add(node.FirstChild.InnerText);
+                idAddress = addressForm(node.FirstChild.InnerText); // формирование адреса отдельного тендера
+                xIdDoc = httpRequestXml(idAddress); // получение документа, содержащего отдельный тендер
+                tender = xmlParseFull(xIdDoc.DocumentElement); // парсинг документа
+                tenderList.Add(tender);
             }
-            return idList; 
+            Console.WriteLine("Обработка закончена. Обработано объектов: " + tenderList.Count); // временный вывод отчета
+            if (xDoc.DocumentElement.SelectSingleNode("//data/_links/next") != null) // переход к следующей странице, если она существует
+            {
+                nextAddress = xDoc.DocumentElement.SelectSingleNode("//data/_links/next/href").InnerText;
+                mainParse(nextAddress, ref tenderList);
+            }
+        }
+
+        static string currentTime() //текущее времяб возвращается в формате YYYYMMDDhhmmss 
+        {
+            string timestr = "";
+
+            DateTime date = DateTime.Now;
+            timestr = string.Format("{0:yyyy''MM''dd''hh''mm''ss}",date);
+            return timestr;
         }
 
         static XmlDocument httpRequestXml(string address) // запрос к апи
@@ -61,26 +87,10 @@ namespace ConsoleParse
             return xDoc;
         } 
 
-        static List<Tender> xmlParseById(List<string> idList) //парсинг документа, содержащего отдельный торг
+        static string addressForm(string pageSize, string startDateTime, string endDateTime) // формирование адреса большого документа
         {
-            string address;
-            Tender tender;
-            XmlDocument xDoc;
-            List<Tender> tenderList = new List<Tender>();
-
-            foreach (string id in idList)
-            {
-                address = addressForm(id);
-                xDoc = httpRequestXml(address);
-                tender = xmlParseFull(xDoc.DocumentElement);
-                tenderList.Add(tender);
-            }
-            return tenderList;
-        }
-        static string addressForm(string page, string pageSize, string startDateTime, string endDateTime) // формирование адреса большого документа
-        {
-            string[] pattern = { "http://api.federal1.ru/api/registry?page=", "&pageSize=", "&startDateTime=", "&endDateTime=" };
-            return pattern[0]+page.ToString()+pattern[1]+pageSize.ToString()+pattern[2]+startDateTime+pattern[3]+endDateTime;
+            string[] pattern = { "http://api.federal1.ru/api/registry?", "&pageSize=", "&startDateTime=", "&endDateTime="};
+            return pattern[0] + pattern[1] + pageSize.ToString() + pattern[2] + startDateTime + pattern[3] + endDateTime;
         } 
 
         static string addressForm(string id) // формирование адреса документа отдельного торга
@@ -96,12 +106,12 @@ namespace ConsoleParse
             {
                 foreach (XmlNode curNode in purchase.ChildNodes)
                 {
-                    if (curNode.FirstChild.FirstChild == null && curNode.InnerText != "")
+                    if (curNode.InnerText != "" && curNode.FirstChild.FirstChild == null)
                     {
                         tender.purchaseData.Add(curNode.Name, curNode.InnerText);
                         if(curNode.Name == "id")
                         {
-                            Console.WriteLine(curNode.InnerText);
+                            Console.WriteLine(curNode.InnerText); // временный вывод айдишников
                         }
                     }
                     else if (curNode.Name == "organization")
@@ -131,14 +141,13 @@ namespace ConsoleParse
                             }
                             if (lot.SelectSingleNode("unitAmount").InnerText != "")
                             {
-                                //currentLot.unitAmount = Convert.ToInt64(lot.SelectSingleNode("unitAmount").InnerText);
                                 currentLot.unitAmount = Decimal.Parse(lot.SelectSingleNode("unitAmount").InnerText.Replace('.', ','));
                             }
                             else
                             {
                                 currentLot.unitAmount = null;
                             }
-                            if(lot.SelectSingleNode("nds")!=null)
+                            if(lot.SelectSingleNode("nds").InnerText != "")
                             {
                                 if (lot.SelectSingleNode("//nds/digitalCode").InnerText != "")
                                 {
@@ -161,10 +170,10 @@ namespace ConsoleParse
                             else
                             {
                                 currentLot.nds.digitalCode = null;
-                                currentLot.nds.digitalCode = null;
+                                currentLot.nds.name = null;
                             }
 
-                            if(lot.SelectSingleNode("currency")!=null)
+                            if(lot.SelectSingleNode("currency").InnerText !="")
                             {
                                 if (lot.SelectSingleNode("//currency/digitalCode").InnerText != "")
                                 {
